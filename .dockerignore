@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# GitHub
+.github
+
+# Documentation and local files
+README.md
+*.md
+LICENSE
+.editorconfig
+.cursorignore
+.cursor
+
+# IDE and OS
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+tmp
+temp
+.cache
+
+# Test and dev
+test
+tests
+*.test
+.env
+.env.*
