@@ -1,12 +1,12 @@
 # capyexports-node-base
 
-Node.js 22 Alpine base Docker image for capyexports projects. Built and published to Aliyun ACR (Shanghai) via GitHub Actions.
+Node.js 22 Alpine base Docker image for capyexports projects. Built and published to Aliyun ACR (Beijing Personal) as **base-node** via GitHub Actions.
 
 ## Standard Reference
 
-- **Base image name:** `capyexports-node-base`
+- **ACR repo name:** `base-node` (namespace: `capyexports`)
 - **Base environment:** Node.js 22 (Alpine)
-- **Target registry:** Aliyun ACR Shanghai (`registry.cn-shanghai.aliyuncs.com`)
+- **Target registry:** Aliyun ACR Beijing Personal (`crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com`)
 - **Deploy node:** Volcano Engine Ubuntu instance (4C4G / 40GB disk)
 
 ## Version
@@ -19,17 +19,47 @@ Node.js 22 Alpine base Docker image for capyexports projects. Built and publishe
 
 ## Usage
 
-### Pull from Aliyun ACR (Shanghai)
+### ACR 操作指南（与控制台一致）
+
+**1. 登录阿里云 Container Registry**
 
 ```bash
-# Login to ACR (use ACR_USERNAME / ACR_PASSWORD, never hardcode)
-docker login registry.cn-shanghai.aliyuncs.com -u YOUR_ACR_USERNAME -p YOUR_ACR_PASSWORD
+docker login --username=gxt4221 crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com
+```
+
+用户名：阿里云账号全名；密码：访问凭证页面设置的密码。可在 [访问凭证](https://cr.console.aliyun.com) 修改。
+
+**2. 从 Registry 拉取镜像**
+
+```bash
+docker pull crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:[镜像版本号]
+```
+
+**3. 推送到 Registry（CI 已自动推送，本地需先登录）**
+
+```bash
+docker login --username=gxt4221 crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com
+docker tag [ImageId] crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:[镜像版本号]
+docker push crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:[镜像版本号]
+```
+
+**4. 专有网络（VPC）**  
+从 ECS 推送时可用内网地址加速、不耗公网流量：  
+`crpi-5nqoro6hoopis4cp-vpc.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:[镜像版本号]`
+
+---
+
+### Pull from Aliyun ACR (Beijing Personal)
+
+```bash
+# Login (use ACR_USERNAME / ACR_PASSWORD in GitHub Secrets; locally use your username)
+docker login crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com -u YOUR_ACR_USERNAME -p YOUR_ACR_PASSWORD
 
 # Pull latest
-docker pull registry.cn-shanghai.aliyuncs.com/YOUR_NAMESPACE/capyexports-node-base:latest
+docker pull crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:latest
 
 # Pull by date tag (YYYYMMDD)
-docker pull registry.cn-shanghai.aliyuncs.com/YOUR_NAMESPACE/capyexports-node-base:20250201
+docker pull crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:20250201
 ```
 
 ### Use in child projects (layer reuse)
@@ -38,7 +68,7 @@ docker pull registry.cn-shanghai.aliyuncs.com/YOUR_NAMESPACE/capyexports-node-ba
 
 ```dockerfile
 # In capyexports or other sub-projects: multi-stage build
-FROM registry.cn-shanghai.aliyuncs.com/YOUR_NAMESPACE/capyexports-node-base:latest
+FROM crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:latest
 WORKDIR /app
 COPY --chown=node:node . .
 RUN npm ci --omit=dev
@@ -49,13 +79,13 @@ CMD ["node", "index.js"]
 ### Build locally
 
 ```bash
-docker build -t capyexports-node-base:local .
+docker build -t base-node:local .
 ```
 
 ### Run
 
 ```bash
-docker run -it capyexports-node-base:local
+docker run -it base-node:local
 ```
 
 ## CI/CD
@@ -84,7 +114,7 @@ docker run -it capyexports-node-base:local
 
 ## Troubleshooting
 
-- **Build failure:** Check ACR login (`ACR_USERNAME` / `ACR_PASSWORD`) and network access to `registry.cn-shanghai.aliyuncs.com`.
+- **Build failure:** Check ACR login (`ACR_USERNAME` / `ACR_PASSWORD`) and network access to `crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com`.
 - **Adding a new project:** Use a multi-stage build and `FROM` this base image as above.
 
 ## License
