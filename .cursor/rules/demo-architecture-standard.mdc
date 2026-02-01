@@ -1,0 +1,45 @@
+---
+description: 规范所有新 Demo 项目的 Dockerfile 编写及在总编排架构下的接入标准。
+globs: ["demo-apps/**/Dockerfile", "docker-compose.yml", "nginx/conf.d/*.conf"]
+---
+
+# Demo 项目接入与 Docker 架构规范
+
+## 1. 总体架构逻辑 (System Overview)
+所有 Demo 必须遵循“网关+私有网络”模式：
+- **唯一入口**: 外部流量仅通过 `Nginx` 容器（80/443）。
+- **内部通讯**: Demo 容器不暴露 `ports` 到宿主机，仅通过 `networks` 暴露给 Nginx。
+- **目录结构**: 必须严格遵守 `/opt/demos/` 目录层级。
+
+## 2. Dockerfile 编写规范 (Mandatory)
+当为 `demo-apps/` 下的新项目生成 Dockerfile 时，必须满足：
+
+- **引用共享 Base**:
+  - 必须使用 Aliyun ACR 北京个人版、capyexports 命名空间下的 **base-node** 镜像：
+  - `FROM crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:latest`
+  - 可选按日期固定版本：`:YYYYMMDD`（如 `:20260201`）。
+- **多阶段构建 (Multi-stage)**:
+  - **Stage 1 (Builder)**: 安装开发依赖并执行构建。
+  - **Stage 2 (Runner)**: 基于上述 base-node，仅从 Builder 拷贝 `dist` 和 `node_modules` (production)，确保镜像体积最小。
+- **权限安全**:
+  - 必须使用 `USER node` 执行运行指令，禁止使用 root。
+- **缓存优化**:
+  - 必须先 `COPY package*.json ./` 再执行 `npm ci` 或 `pnpm install`，以利用 Docker 层缓存。
+
+## 3. 编排接入标准 (Compose Integration)
+在修改根目录 `docker-compose.yml` 时，子服务必须包含：
+- **资源限制**:
+  ```yaml
+  deploy:
+    resources:
+      limits:
+        memory: 512M # 针对 4G 内存实例的硬限制
+  ```
+- **日志限制**（40GB 磁盘约束）: 配置 `logging.driver` 的 `max-size: 20m`。
+- **网络**: 接入与 Nginx 共用的内部 `networks`，不对外暴露端口。
+
+## 4. 部署路径速查 (Deployment Reference)
+- **Registry**: `crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com`
+- **命名空间**: `capyexports`
+- **Base 镜像名**: `base-node`
+- **完整镜像**: `crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexports/base-node:latest`

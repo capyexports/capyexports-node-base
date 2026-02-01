@@ -1,7 +1,7 @@
 # GitHub Actions: Build and push base-node to Aliyun ACR (Beijing Personal)
 # Trigger only on Dockerfile or workflow file changes
 # Tags: latest and date (YYYYMMDD)
-# Credentials: use secrets.ACR_USERNAME and secrets.ACR_PASSWORD (no hardcoding)
+# Credentials: use Organization secrets - ACR_USERNAME, ACR_PASSWORD, ACR_NAMESPACE
 name: Build Base Image
 
 on:

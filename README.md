@@ -52,7 +52,7 @@ docker push crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com/capyexport
 ### Pull from Aliyun ACR (Beijing Personal)
 
 ```bash
-# Login (use ACR_USERNAME / ACR_PASSWORD in GitHub Secrets; locally use your username)
+# Login (CI uses Organization secrets: ACR_USERNAME, ACR_PASSWORD; locally use your username)
 docker login crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com -u YOUR_ACR_USERNAME -p YOUR_ACR_PASSWORD
 
 # Pull latest
@@ -93,7 +93,7 @@ docker run -it base-node:local
 - **Workflow:** `.github/workflows/build-base.yml`
 - **Trigger:** Only when `Dockerfile` or `.github/workflows/**` changes (path filter).
 - **Tags:** Pushed as `:latest` and `:${{ date }}` (YYYYMMDD).
-- **Secrets:** Use `ACR_USERNAME`, `ACR_PASSWORD`, and `ACR_NAMESPACE` in repo secrets (no hardcoded credentials).
+- **Secrets:** Use **Organization secrets**: `ACR_USERNAME`, `ACR_PASSWORD`, `ACR_NAMESPACE`. Configure under **Organization → Settings → Secrets and variables → Actions**. Grant this repository access to the secrets. No hardcoded credentials.
 - **Cache:** GitHub Actions cache for faster rebuilds.
 
 ## 40GB disk constraint (deploy node)
@@ -114,7 +114,7 @@ docker run -it base-node:local
 
 ## Troubleshooting
 
-- **Build failure:** Check ACR login (`ACR_USERNAME` / `ACR_PASSWORD`) and network access to `crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com`.
+- **Build failure:** Check Organization secrets (`ACR_USERNAME` / `ACR_PASSWORD`) and that this repo has access, and network access to `crpi-5nqoro6hoopis4cp.cn-beijing.personal.cr.aliyuncs.com`.
 - **Adding a new project:** Use a multi-stage build and `FROM` this base image as above.
 
 ## License

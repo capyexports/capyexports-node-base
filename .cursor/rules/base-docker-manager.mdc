@@ -21,7 +21,7 @@ globs: ["Dockerfile", ".github/workflows/*.yml", "**/deploy/**"]
 ## 3. GitHub Actions 流水线逻辑
 - **触发条件**: 仅在 `Dockerfile` 或工作流文件变更时触发。
 - **标签策略**: 必须同时推送 `:latest` 和 `:${{ date }}` 格式的标签。
-- **敏感信息**: 严禁硬编码密码，必须引用 `${{ secrets.ACR_USERNAME }}` 和 `${{ secrets.ACR_PASSWORD }}`。
+- **敏感信息**: 严禁硬编码密码；一律使用 **Organization secrets**：`ACR_USERNAME`、`ACR_PASSWORD`、`ACR_NAMESPACE`。在组织设置中为仓库授予访问权限后，workflow 中直接引用即可，无需声明 environment。
 
 ## 4. 40GB 磁盘空间约束 (Disk Space Constraint)
 - **日志限制**: 所有容器必须在 `docker-compose.yml` 或 `daemon.json` 中限制日志大小为 `max-size: 20m`。
